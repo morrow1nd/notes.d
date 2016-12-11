@@ -1,0 +1,4 @@
+
+见Effective C++书。
+
+http://www.cnblogs.com/jiangheng/p/3748051.html 一问讲解的不错

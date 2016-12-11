@@ -1,0 +1,6 @@
+[submodule "cplusplus/LearnFromCode/Boost/boost.signals2"]
+	path = cplusplus/LearnFromCode/Boost/boost.signals2
+	url = https://git.gitbook.com/morrow1nd/boost-signals2-notebook.git
+[submodule "cplusplus/LearnFromCode/Test/CUTE"]
+	path = cplusplus/LearnFromCode/Test/CUTE
+	url = https://git.gitbook.com/morrow1nd/cute-notebook.git

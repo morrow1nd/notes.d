@@ -1,0 +1,3 @@
+
+https://connect.microsoft.com/VisualStudio/feedback/details/763051/a-value-of-predefined-macro-cplusplus-is-still-199711l
+http://stackoverflow.com/questions/14131454/visual-studio-2012-cplusplus-and-c-11

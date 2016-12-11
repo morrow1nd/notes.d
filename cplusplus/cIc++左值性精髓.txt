@@ -1,0 +1,79 @@
+http://bbs.csdn.net/topics/380094503
+
+
+
+C/C++左值性精髓
+
+（一） 左值的前世今生
+
+ 
+
+        左值（lvalue）是C/C++表达式的属性。只有针对一个表达式，才能谈论其左值性。
+
+        左值性由来已久，早在世界上第一个C标准C89出现之前就已经存在了。早期的定义是基于内置赋值运算符的需求的，能作为赋值运算符的左操作数的表达式属于左值，只能作为右操作数的表达式属于右值（rvalue），左值、右值中的左右两字来源于此。
+
+        但左值性的早期定义过于粗糙，导致它具有很大的局限性，有些现象甚至无法解释。例如数组名，数组属于聚集，不是标量类型，其内容无法作为一个数值表示，而赋值运算符要求操作数为标量类型（结构是特例），将数组作为赋值运算符的左操作数进行赋值操作显然不合理，因此，数组名在左值早期定义中属于右值；另一方面，数组作为完整对象，理应可以进行取地址运算，但是，对于数据抽象，取地址运算符要求操作数是左值，这就形成了一个矛盾，这个矛盾用左值性的早期定义是无法解决的。
+
+        于是，出现了另一种关于左值性的观点。这种观点认为，左值应该指示出一个容器（对象），通俗点说指示出一个“洞”，可以往这个“洞”里存放东西（数值），当然也可以修改“洞”里面的东西。这个“洞”被一个表达式指示（designate），这个表达式就称为左值表达式。在这个定义中，lvalue中的l不再代表left，而是locator；而rvalue中的r也不再代表right，而是read。这两个改变表达了不同于赋值运算符操作数的意义，即左值是一个对象指示符，而右值是从这个对象中读取到的值。有些对象是可修改的，也有些对象不可修改，相对应地，存在可修改的左值和不可修改的左值。
+
+        两种关于左值的不同诠释在C社区中各自流行，甚至导致了C社区中的争执。到了C89标准制定的时候，C89委员会对这两种观点进行了折衷，将locator定义作为左值的定义，而赋值运算符定义作为左值是否可修改的判定依据，C89在rational中谈到了这个问题：
+
+ 
+
+6.3.2 Other operands
+
+6.3.2.1 Lvalues, arrays, and function designators
+
+ 
+
+A difference of opinion within the C community centered around the meaning oflvalue, one group considering an lvalue to be any kind of object locator, another group holding that an lvalue is meaningful on the left side of an assigning operator. The C89 Committee adopted the definition of lvalue as an object locator. The term modifiable lvalue  is used for the second of the above concepts.
+
+ 
+
+因此，在C89中，左值的定义是一个指示对象的表达式，该表达式具有对象类型或非void不完整类型，而右值的定义是表达式的值。请看C89的原文：
+
+ 
+
+6.2.2   Other operands .
+
+6.2.2.1  Lvalues and function designators
+
+ 
+
+An lvalue is an expression (with an object type or an incomplete type other than void) that designates an object: ”
+
+ 
+
+What is sometimes called “rvalue” is in this International Standard described as the “value of an expression”.
+
+ 
+
+        后来的C99和C++的各种标准版本一直使用这个定义的主要语义，只对某些微小细节进行了修改。C/C++的左值模型相对与左值性的早期定义是一个巨大的进步，它使左值不再局限于某个运算符的运算规则，而是扩展到对象模型，赋予了左值空前丰富的内涵。
+
+        根据C标准的规定，一个表达式是否左值与能否作为内置赋值运算符的左操作数无关，而决定于该表达式是否具有对象或非VOID不完整类型，而当我们判断一个左值是否可修改时，则根据其能否作为内置赋值运算符的左操作数作为依据，可以的就是可修改的左值，不可以的就是不可修改的左值。
+
+        C89还规定左值必定指示一个有效对象，这是一个失误，因为有些表达式，例如：
+
+ 
+
+int *p;
+
+*p = ......
+
+ 
+
+p虽然没有指向一个有效对象，但这里的*p显然仍是一个左值，C89的定义排除了这种情况，不太合理，这个失误在C99中得到了修正，C99不再规定左值必须指示一个有效对象，但指出如果使用了一个没有指示有效对象的左值，其行为是未定义的。C99原文：
+
+ 
+
+6.3.2 Other operands
+
+6.3.2.1 Lvalues, arrays, and function designators
+
+An lvalue is an expression with an object type or an incomplete type other thanvoid; if an lvalue does not designate an object when it is evaluated, the behavior is undefined.
+
+ 
+
+        在C/C++中，具有函数类型的表达式称为函数指示符，例如函数名或者对函数指针的解引用。由于C中的左值性反映的是数据抽象而不是操作抽象，因此C中的函数指示符既不是左值也不是右值，这个观念也在函数到指针的转换条款中得到体现，函数到指针的转换条款仅指出转换结果是一个指针，但没有指出结果的左值性。到了C++，这种观念发生了变化，C++认为，既然左值性是表达式的属性，作为初等表达式的函数指示符却没有左值性是没有道理的，同时鉴于赋予函数指示符左值性并没有坏处，因此C++中的左值也包括函数指示符。要注意的是，函数左值不包括非静态成员函数，这是因为非静态成员函数的指针与普通指针是很不相同的，C++标准出于强调两者差异的需要，硬性规定非静态成员函数的左值不能获得，从而禁止了非静态成员函数的左值转换。
+
+        C++关于左值性的定义是这样的: 一个表达式不是左值就是右值,与C完全不一样。初看起来，这个“定义”似乎非常“草率”，其实不然，具体原因与C/C++的类型划分方法有关。C/C++中的类型系统可以有多种划分方法，例如基本类型与复合类型（也叫派生类型）、标量类型与聚集类型，还有一种是根据对象模型来分，分为对象类型、不完整类型、函数类型和引用类型（C没有引用类型），由于C++规定引用类型属于左值，同时也把函数纳入左值范畴，因此C++的左值包括了对象模型划分方法中的所有类型，再使用类似C那种左值定义方法是多余的，C++仅需要指出一个表达式不是左值就是右值就行了，但C就不行，因为C存在既不是左值也不是右值的表达式：函数指示符！
