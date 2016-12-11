@@ -1,2 +1,2 @@
 # notes.d
-my daily notes
+My Daily Notes.
