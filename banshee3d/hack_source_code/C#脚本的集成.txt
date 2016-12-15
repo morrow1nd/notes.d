@@ -1,0 +1,11 @@
+
+# 引擎中被update的时刻
+
+BsCoreApplication.c ## CoreApplication::runMainLoop() ## PROFILE_CALL(gCoreSceneManager()._update(), "SceneManager");
+	void CoreSceneManager::_update() ##
+		for(auto iter = components.begin(); iter != components.end(); ++iter)
+		{
+			(*iter)->update();
+		}
+
+C#脚本作为一个组件可以加入到SceneObject中，自然是在此处遍历时被调用component中的update方法的。但csharp component 不是在Layers##BansheeCore/BansheeEngine##Components中定义的，而是在Script##SBansheeEngine##BsManagedComponent.h中定义的。
