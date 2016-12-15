@@ -1,5 +1,6 @@
+# c#脚本的集成
 
-# 引擎中被update的时刻
+## 引擎中被update的时刻
 
 BsCoreApplication.c ## CoreApplication::runMainLoop() ## PROFILE_CALL(gCoreSceneManager()._update(), "SceneManager");
 	void CoreSceneManager::_update() ##
@@ -9,3 +10,27 @@ BsCoreApplication.c ## CoreApplication::runMainLoop() ## PROFILE_CALL(gCoreScene
 		}
 
 C#脚本作为一个组件可以加入到SceneObject中，自然是在此处遍历时被调用component中的update方法的。但csharp component 不是在Layers##BansheeCore/BansheeEngine##Components中定义的，而是在Script##SBansheeEngine##BsManagedComponent.h中定义的。
+
+
+
+## 如何将引擎的接口暴露给c#脚本
+
+以SceneObject中的getWorldTfrm为例
+internal_getWorldTransform
+
+1. EditorApplication::onStartUp()##ScriptManager::instance().initialize();
+2. 
+
+3. SCRIPT_OBJ(ENGINE_ASSEMBLY, "BansheeEngine", "SceneObject")声明了static void initRuntimeData()
+
+4. 在BsScriptSceneObject.cpp ## class ScriptSceneObject ## static void initRuntimeData()中“注册”
+		metaData.scriptClass->addInternalCall("Internal_GetWorldTransform", &ScriptSceneObject::internal_getWorldTransform);
+
+5. 实际实现于BsScriptSceneObject.cpp
+		void ScriptSceneObject::internal_getWorldTransform(ScriptSceneObject* nativeInstance, Matrix4* value)
+		{
+			if (!checkIfDestroyed(nativeInstance))
+				*value = nativeInstance->mSceneObject->getWorldTfrm();
+			else
+				*value = Matrix4();
+		}
