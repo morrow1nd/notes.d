@@ -12,6 +12,9 @@ BsCoreApplication.c ## CoreApplication::runMainLoop() ## PROFILE_CALL(gCoreScene
 C#脚本作为一个组件可以加入到SceneObject中，自然是在此处遍历时被调用component中的update方法的。但csharp component 不是在Layers##BansheeCore/BansheeEngine##Components中定义的，而是在Script##SBansheeEngine##BsManagedComponent.h中定义的。
 
 
+## 脚本系统的初始化过程
+
+
 
 ## 如何将引擎的接口暴露给c#脚本
 
