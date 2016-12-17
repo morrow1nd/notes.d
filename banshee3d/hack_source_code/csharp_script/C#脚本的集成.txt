@@ -14,6 +14,32 @@ C#脚本作为一个组件可以加入到SceneObject中，自然是在此处遍�
 
 ## 脚本系统的初始化过程
 
+1. 首先加载脚本库
+	Application::onStartUp()
+		ScriptManager::startUp();
+		loadScriptSystem();
+			loadPlugin("BansheeMono", &mMonoPlugin);
+			loadPlugin("SBansheeEngine", &mSBansheeEnginePlugin);
+			loadPlugin("SBansheeEditor", &mSBansheeEditorPlugin);
+				...
+					SPtr<EngineScriptLibrary> library = bs_shared_ptr_new<EngineScriptLibrary>();
+					ScriptManager::instance()._setScriptLibrary(library);
+2. 初始化脚本库
+	EditorApplication::onStartUp()
+		ScriptManager::instance().initialize();
+			mScriptLibrary->initialize();
+				// mScriptLibrary 是EditorScriptLibrary的实例
+				EditorScriptLibrary::initialize()
+					EngineScriptLibrary::initialize();
+						..进行一系列的初始化
+						MonoManager::instance().loadAssembly(...)
+							...
+								ScriptSceneObject::initRuntimeData()
+									将真正的c++函数暴露在C#的运行环境中
+						String ASSEMBLY_ENTRY_POINT = "Program::Start";
+						bansheeEngineAssembly.invoke(ASSEMBLY_ENTRY_POINT);
+					EditorScriptManager::startUp();
+
 
 
 ## 如何将引擎的接口暴露给c#脚本
@@ -22,7 +48,8 @@ C#脚本作为一个组件可以加入到SceneObject中，自然是在此处遍�
 internal_getWorldTransform
 
 1. EditorApplication::onStartUp()##ScriptManager::instance().initialize();
-2. 
+
+... 见![pic](./init_script.png)
 
 3. SCRIPT_OBJ(ENGINE_ASSEMBLY, "BansheeEngine", "SceneObject")声明了static void initRuntimeData()
 
@@ -37,3 +64,5 @@ internal_getWorldTransform
 			else
 				*value = Matrix4();
 		}
+
+
