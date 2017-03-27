@@ -1,0 +1,40 @@
+<CoreApplication::runMainLoop()>
+    <delaytime />
+    <Platform::_update()>
+        <update the thing of drag_and_drop operation gotten from core thread, this _update notify the sim thread./>
+    </Platform::_update()>
+    <DeferredCallManager::instance()._update()  question='who use DeferredCallManager?' />
+    <gTime()._update()  desc='update currFrameTime serval thing' />
+    gInput()._update();
+    RenderWindowManager::instance()._update(); 
+    gInput()._triggerCallbacks();
+    gDebug()._triggerCallbacks();
+    AnimationManager::instance().preUpdate();
+    preUpdate();
+    <mStartUpDesc.updateCallback() />
+    gCoreSceneManager()._update()
+    gAudio()._update();
+    gPhysics().update();
+    AnimationManager::instance().postUpdate();
+    <update plugins />
+    postUpdate();
+    ResourceListenerManager::instance().update();
+
+    ResourceListenerManager::instance().update();
+    gCoreSceneManager()._updateCoreObjectTransforms();
+    RendererManager::instance().getActive()->renderAll()
+    <wait for core thread to finish this frame />
+
+    gCoreThread().queueCommand(std::bind(&CoreApplication::beginCoreProfiling, this), CTQF_InternalQueue);
+    gCoreThread().queueCommand(&Platform::_coreUpdate, CTQF_InternalQueue);
+
+    gCoreThread().update(); 
+    gCoreThread().submitAll(); 
+
+    gCoreThread().queueCommand(std::bind(&CoreApplication::frameRenderingFinishedCallback, this), CTQF_InternalQueue);
+
+    gCoreThread().queueCommand(std::bind(&RenderWindowCoreManager::_update, RenderWindowCoreManager::instancePtr()), CTQF_InternalQueue);
+    gCoreThread().queueCommand(std::bind(&QueryManager::_update, QueryManager::instancePtr()), CTQF_InternalQueue);
+    gCoreThread().queueCommand(std::bind(&CoreApplication::endCoreProfiling, this), CTQF_InternalQueue);
+
+</CoreApplication::runMainLoop()>
